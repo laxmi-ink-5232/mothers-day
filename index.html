@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Mother's Day 💐</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Montserrat:wght@200;300&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#080808;color:#fff;font-family:'Montserrat',sans-serif;overflow:hidden}
+
+/* ── SETUP SCREEN ── */
+#setup{
+  position:fixed;inset:0;z-index:100;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;
+  background:radial-gradient(ellipse at 50% 60%, #1a0a10 0%, #080808 70%);
+}
+#setup h1{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+  font-size:clamp(2.5rem,6vw,5rem);color:#f9d5e5;letter-spacing:.02em;
+  text-align:center;line-height:1.2;
+}
+#setup p{color:rgba(255,255,255,.4);font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;text-align:center}
+
+.drop-zone{
+  width:min(90vw,460px);border:1.5px dashed rgba(249,213,229,.35);border-radius:16px;
+  padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:all .3s;position:relative;
+}
+.drop-zone:hover,.drop-zone.over{border-color:#f9d5e5;background:rgba(249,213,229,.05)}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-zone .icon{font-size:2.5rem;margin-bottom:.75rem}
+.drop-zone strong{display:block;font-weight:300;letter-spacing:.08em;font-size:.9rem;color:rgba(255,255,255,.8)}
+.drop-zone span{font-size:.72rem;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;margin-top:.4rem;display:block}
+
+#start-btn{
+  background:linear-gradient(135deg,#b5425a,#8a2a40);border:none;color:#fff;
+  padding:.9rem 3rem;border-radius:50px;font-family:'Montserrat',sans-serif;
+  font-weight:300;letter-spacing:.2em;text-transform:uppercase;font-size:.8rem;
+  cursor:pointer;transition:transform .2s,box-shadow .2s;display:none;
+  box-shadow:0 4px 24px rgba(180,66,90,.4);
+}
+#start-btn:hover{transform:scale(1.04);box-shadow:0 6px 32px rgba(180,66,90,.55)}
+#file-count{font-size:.75rem;color:rgba(249,213,229,.7);letter-spacing:.1em;display:none}
+
+/* ── SLIDESHOW ── */
+#show{position:fixed;inset:0;display:none;background:#000}
+
+.slide{
+  position:absolute;inset:0;opacity:0;transition:opacity 1.8s ease-in-out;
+  display:flex;align-items:center;justify-content:center;
+}
+.slide.active{opacity:1}
+.slide img{
+  max-width:100%;max-height:100%;width:auto;height:auto;
+  object-fit:contain;display:block;
+}
+.slide.active img{animation:kb 7s ease-in-out forwards}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.055)}}
+
+/* vignette */
+#vignette{
+  position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.6) 100%);
+  z-index:2;
+}
+
+/* ── TITLE OVERLAY ── */
+#title-overlay{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:10;text-align:center;pointer-events:none;
+  animation:fadeOut 1s ease 4s forwards;
+}
+#title-overlay h1{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+  font-size:clamp(3rem,9vw,8rem);color:#fff;
+  text-shadow:0 2px 60px rgba(0,0,0,.8);letter-spacing:.02em;line-height:1.1;
+  animation:fadeUp 1.5s ease .3s both;
+}
+#title-overlay p{
+  font-family:'Montserrat',sans-serif;font-weight:200;
+  font-size:clamp(.75rem,1.8vw,1.1rem);letter-spacing:.35em;text-transform:uppercase;
+  color:rgba(255,255,255,.65);margin-top:1rem;
+  animation:fadeUp 1.5s ease .9s both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeOut{to{opacity:0;pointer-events:none}}
+
+/* ── CAPTION ── */
+#caption{
+  position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%);
+  z-index:10;font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(1rem,2.5vw,1.6rem);color:rgba(255,255,255,.85);
+  text-shadow:0 1px 24px rgba(0,0,0,.8);text-align:center;
+  max-width:80vw;transition:opacity .8s;
+}
+
+/* ── PROGRESS BAR ── */
+#pbar{position:fixed;bottom:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg,#f9d5e5,#c97a94);z-index:20}
+
+/* ── CONTROLS ── */
+#ctrl{
+  position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:.9rem;z-index:20;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(10px);
+  border-radius:50px;padding:.55rem 1.4rem;border:1px solid rgba(255,255,255,.1);
+}
+#ctrl button{
+  background:none;border:none;color:rgba(255,255,255,.8);cursor:pointer;
+  font-size:1.1rem;padding:.25rem .4rem;transition:color .2s,transform .15s;line-height:1;
+}
+#ctrl button:hover{color:#fff;transform:scale(1.2)}
+#dots{display:flex;gap:5px;align-items:center;max-width:50vw;flex-wrap:wrap;justify-content:center}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.3);
+  cursor:pointer;transition:all .3s}
+.dot.active{background:#f9d5e5;transform:scale(1.7)}
+
+/* music pill */
+#music-pill{
+  position:fixed;top:1rem;left:1rem;z-index:20;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(10px);border-radius:50px;
+  padding:.4rem 1rem;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);
+  cursor:pointer;transition:color .2s;display:flex;align-items:center;gap:.4rem;
+}
+#music-pill:hover{color:rgba(255,255,255,.9)}
+
+/* slide counter */
+#counter{
+  position:fixed;top:1rem;right:1rem;z-index:20;
+  font-size:.7rem;letter-spacing:.15em;color:rgba(255,255,255,.35);
+}
+</style>
+</head>
+<body>
+
+<audio id="bgm" loop></audio>
+
+<!-- ══ SETUP SCREEN ══ -->
+<div id="setup">
+  <h1>Happy Mother's Day</h1>
+  <p>Build your slideshow in seconds</p>
+
+  <div class="drop-zone" id="photo-drop">
+    <input type="file" id="photo-input" accept="image/*" multiple>
+    <div class="icon">🌸</div>
+    <strong>Click here to add your photos</strong>
+    <span>or drag &amp; drop · JPG · PNG · any image</span>
+  </div>
+
+  <div class="drop-zone" id="audio-drop" style="padding:1.4rem 2rem">
+    <input type="file" id="audio-input" accept="audio/*">
+    <div class="icon" style="font-size:1.8rem;margin-bottom:.5rem">🎵</div>
+    <strong>Click here to add background music</strong>
+    <span>or drag &amp; drop · MP3 · WAV · optional</span>
+  </div>
+
+  <div id="file-count"></div>
+  <button id="start-btn" onclick="startShow()">▶ &nbsp;Start Slideshow</button>
+</div>
+
+<!-- ══ SHOW SCREEN ══ -->
+<div id="show">
+  <div id="vignette"></div>
+  <div id="title-overlay">
+    <h1>Happy<br>Mother's Day</h1>
+    <p>with all the love in the world</p>
+  </div>
+  <div id="caption"></div>
+  <div id="pbar"></div>
+  <div id="counter"></div>
+
+  <label id="music-pill" title="Change music">
+    <input type="file" id="audio-input2" accept="audio/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%">
+    <span id="music-name">🎵 Add music</span>
+  </label>
+
+  <div id="ctrl">
+    <button id="prev-btn">&#9664;</button>
+    <button id="play-btn">⏸</button>
+    <div id="dots"></div>
+    <button id="next-btn">&#9654;</button>
+  </div>
+</div>
+
+<script>
+const DURATION = 6000;
+const captions = [
+  "Thank you for everything 💗",
+  "A love that knows no bounds",
+  "Every memory treasured forever",
+  "The heart of our family",
+  "Always my guiding light",
+  "Words can't express our gratitude",
+  "The best Mum in the world 🌸",
+  "Forever grateful for your love",
+  "You make every day brighter",
+  "Happy Mother's Day! 💐",
+];
+
+let photos = [];
+let current = 0;
+let playing = true;
+let timerID = null;
+let elapsed = 0;
+let timerStart = null;
+
+// ── PHOTO INPUT ──────────────────────────────────────────
+document.getElementById('photo-input').addEventListener('change', function(){
+  loadPhotos(this.files);
+});
+
+function loadPhotos(files){
+  const imgs = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if(!imgs.length) return;
+  imgs.sort((a,b) => a.name.localeCompare(b.name));
+  photos = imgs.map(f => URL.createObjectURL(f));
+  const fc = document.getElementById('file-count');
+  const sb = document.getElementById('start-btn');
+  fc.textContent = '✓ ' + photos.length + ' photo' + (photos.length > 1 ? 's' : '') + ' ready';
+  fc.style.display = 'block';
+  sb.style.display = 'inline-block';
+}
+
+// Drag highlight
+['photo-drop','audio-drop'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
+  el.addEventListener('dragleave', () => el.classList.remove('over'));
+  el.addEventListener('drop', e => {
+    e.preventDefault(); el.classList.remove('over');
+    if(id === 'photo-drop') loadPhotos(e.dataTransfer.files);
+    else loadAudio(e.dataTransfer.files[0]);
+  });
+});
+
+// ── AUDIO INPUT ──────────────────────────────────────────
+document.getElementById('audio-input').addEventListener('change', function(){ loadAudio(this.files[0]); });
+document.getElementById('audio-input2').addEventListener('change', function(){ loadAudio(this.files[0]); });
+
+function loadAudio(file){
+  if(!file) return;
+  const bgm = document.getElementById('bgm');
+  bgm.src = URL.createObjectURL(file);
+  bgm.volume = 0.65;
+  if(playing) bgm.play().catch(()=>{});
+  document.getElementById('music-name').textContent = '🎵 ' + file.name.replace(/\.[^.]+$/, '');
+}
+
+// ── BUILD & START ─────────────────────────────────────────
+function startShow(){
+  if(!photos.length) return;
+  buildSlides();
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('show').style.display = 'block';
+  goTo(0);
+  startTimer();
+  const bgm = document.getElementById('bgm');
+  if(bgm.src && bgm.src !== window.location.href) bgm.play().catch(()=>{});
+}
+
+function buildSlides(){
+  document.querySelectorAll('.slide').forEach(s => s.remove());
+  const show = document.getElementById('show');
+  const ref = document.getElementById('vignette');
+  photos.forEach(url => {
+    const div = document.createElement('div');
+    div.className = 'slide';
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = '';
+    img.draggable = false;
+    div.appendChild(img);
+    show.insertBefore(div, ref);
+  });
+  buildDots();
+}
+
+function buildDots(){
+  const d = document.getElementById('dots');
+  d.innerHTML = '';
+  const max = Math.min(photos.length, 25);
+  for(let i = 0; i < max; i++){
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => { elapsed = 0; goTo(i); if(playing) startTimer(); });
+    d.appendChild(dot);
+  }
+}
+
+function goTo(idx){
+  document.querySelectorAll('.slide').forEach((s, i) => {
+    s.classList.remove('active');
+    if(i === idx){
+      const img = s.querySelector('img');
+      img.style.animation = 'none';
+      s.classList.add('active');
+      requestAnimationFrame(() => requestAnimationFrame(() => { img.style.animation = ''; }));
+    }
+  });
+  const cap = document.getElementById('caption');
+  cap.style.opacity = '0';
+  setTimeout(() => { cap.textContent = captions[idx % captions.length]; cap.style.opacity = '1'; }, 700);
+  document.getElementById('counter').textContent = (idx + 1) + ' / ' + photos.length;
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+  current = idx;
+}
+
+// ── TIMER ────────────────────────────────────────────────
+function startTimer(){
+  clearTimeout(timerID);
+  const bar = document.getElementById('pbar');
+  timerStart = Date.now() - elapsed;
+  bar.style.transition = 'none';
+  bar.style.width = (elapsed / DURATION * 100) + '%';
+  requestAnimationFrame(() => {
+    bar.style.transition = `width ${DURATION - elapsed}ms linear`;
+    bar.style.width = '100%';
+  });
+  timerID = setTimeout(() => {
+    elapsed = 0;
+    goTo((current + 1) % photos.length);
+    bar.style.transition = 'none'; bar.style.width = '0%';
+    if(playing) startTimer();
+  }, DURATION - elapsed);
+}
+
+function pauseTimer(){
+  clearTimeout(timerID);
+  elapsed = Date.now() - timerStart;
+  const bar = document.getElementById('pbar');
+  bar.style.transition = 'none';
+  bar.style.width = (elapsed / DURATION * 100) + '%';
+}
+
+// ── BUTTONS ───────────────────────────────────────────────
+document.getElementById('play-btn').addEventListener('click', () => {
+  const bgm = document.getElementById('bgm');
+  playing = !playing;
+  document.getElementById('play-btn').textContent = playing ? '⏸' : '▶';
+  if(playing){ bgm.play().catch(()=>{}); startTimer(); }
+  else { bgm.pause(); pauseTimer(); }
+});
+document.getElementById('prev-btn').addEventListener('click', () => {
+  elapsed = 0; goTo((current - 1 + photos.length) % photos.length);
+  if(playing) startTimer();
+});
+document.getElementById('next-btn').addEventListener('click', () => {
+  elapsed = 0; goTo((current + 1) % photos.length);
+  if(playing) startTimer();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowRight') document.getElementById('next-btn').click();
+  if(e.key === 'ArrowLeft')  document.getElementById('prev-btn').click();
+  if(e.key === ' '){ e.preventDefault(); document.getElementById('play-btn').click(); }
+});
+</script>
+</body>
+</html>
